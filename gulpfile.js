@@ -3,6 +3,10 @@ var $    = require('gulp-load-plugins')();
 var uglify = require('gulp-uglify');
 var pump = require('pump');
 var concat = require('gulp-concat');
+var sass = require('gulp-sass');
+
+var browserSync = require('browser-sync').create();
+
 
 var sassPaths = [
   'bower_components/normalize.scss/sass',
@@ -31,8 +35,32 @@ gulp.task('compress-js', function() {
     .pipe(gulp.dest('./dist/'))
 });
 
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        proxy: "localhost:8888"
+    });
+});
 
-gulp.task('default', ['sass', 'compress-js'], function() {
+gulp.task('serve', ['sass'], function() {
+
+    browserSync.init({
+        proxy: "localhost:8888"
+    });
+
+    gulp.watch("scss/**/*.scss", ['sass']);
+    gulp.watch("css/app.css").on('change', browserSync.reload);
+});
+
+gulp.task('sass', function() {
+    return gulp.src("scss/components/*.scss")
+        .pipe(sass())
+        .pipe(gulp.dest("scss/app.scss"))
+        .pipe(browserSync.stream());
+});
+
+
+
+gulp.task('default', ['sass', 'compress-js', 'serve'], function() {
   gulp.watch(['scss/**/*.scss'], ['sass']);
   gulp.watch('js/_*.js', ['compress-js']);
 });
