@@ -10,3 +10,5 @@
 </head>
 <?php wp_head();?>
 <body>
+  <div class="row">
+    <div class="column small-12">
